@@ -1,4 +1,4 @@
-import { PickUpSectionSkeleton } from '@/components/PickUpSection';
+import { PickUpSectionSkeleton } from '@/components/PickUpSectionSkeleton';
 import { BookCarouselSkeleton } from '@/components/BookCarousel';
 import { CollectionsCarouselSkeleton } from '@/components/CollectionsCarousel';
 

@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
   try {
     let query = supabase
-      .from('summaries')
+      .from('books')
       .select('*', { count: 'exact' })
       .range(startIndex, startIndex + limit - 1);
 

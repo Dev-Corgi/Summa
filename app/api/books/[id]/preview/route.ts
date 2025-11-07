@@ -4,8 +4,8 @@ import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   if (!id) {
     return apiError('Book ID is required.', 400);
@@ -13,8 +13,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   try {
     const { data, error } = await supabase
-      .from('summaries')
-      .select('id, title, authors, category, summary_introduction, summary_chapters')
+      .from('books')
+      .select('id, title, authors, category, introduction, chapters')
       .eq('id', id)
       .single();
 
@@ -31,13 +31,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
 
     // Slice the chapters to return only the first two for the preview
-    const previewChapters = Array.isArray(data.summary_chapters) 
-      ? data.summary_chapters.slice(0, 2) 
+    const previewChapters = Array.isArray(data.chapters) 
+      ? data.chapters.slice(0, 2) 
       : [];
 
     const previewData = {
       ...data,
-      summary_chapters: previewChapters,
+      chapters: previewChapters,
     };
 
     return apiSuccess(previewData);

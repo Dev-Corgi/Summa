@@ -9,37 +9,63 @@ import {
 } from '@/components/ui/select';
 import { Search } from 'lucide-react';
 
-async function getSearchResults(query: string): Promise<any[]> {
-  // Mock data for demonstration, mixing collections and books
-  // @ts-ignore
-  const items: SearchResult[] = [];
-  for (let i = 0; i < 16; i++) {
-    if (i % 3 === 0) {
-      items.push({
-        type: 'book',
-        id: `book-${i}`,
-        title: `The Art of War ${i}`,
-        authors: ['Sun Tzu'],
-        short_description: 'Classic military strategy for politics, business, and everyday life.',
-        reading_time: 11,
-        rating: 4.4
-      });
-    } else {
-      items.push({
-        type: 'collection',
-        id: `collection-${i}`,
-        title: `Blinks for True Crime Fans ${i}`,
-        description: 'For those of us who enjoy mystery, intrigue, and suspense.',
-        item_count: 10 + i,
-        image_type: 'stack',
-      });
-    }
+// Get the base URL for server-side fetches
+function getBaseUrl() {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
   }
-  return items;
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  return 'http://localhost:3000';
 }
 
-export default async function SearchPage({ searchParams }: { searchParams: { q: string } }) {
-  const results = await getSearchResults(searchParams.q || '');
+const API_BASE_URL = getBaseUrl();
+
+async function getSearchResults(query: string, type: string = 'all'): Promise<any[]> {
+  if (!query) {
+    return [];
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/books/search?q=${encodeURIComponent(query)}&type=${type}`, {
+      next: { revalidate: 0 } // Don't cache search results
+    });
+    
+    if (!res.ok) {
+      throw new Error('Failed to fetch search results');
+    }
+    
+    const data = await res.json();
+    const results = data.data || { books: [], collections: [] };
+    
+    // Combine books and collections into a single array with type markers
+    const items: any[] = [];
+    
+    results.books.forEach((book: any) => {
+      items.push({
+        type: 'book',
+        ...book
+      });
+    });
+    
+    results.collections.forEach((collection: any) => {
+      items.push({
+        type: 'collection',
+        ...collection
+      });
+    });
+    
+    return items;
+  } catch (error) {
+    console.error('Failed to fetch search results:', error);
+    return [];
+  }
+}
+
+export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string; type?: string }> }) {
+  const params = await searchParams;
+  const results = await getSearchResults(params.q || '', params.type || 'all');
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

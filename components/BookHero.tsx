@@ -1,9 +1,11 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Star, Clock, FileText, Key, Bookmark, Play, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BookCoverImage } from './BookCoverImage';
-import { Separator } from '@/components/ui/separator';
+
 interface Book {
+  id: string;
   title: string;
   authors: string[];
   short_description?: string;
@@ -11,6 +13,7 @@ interface Book {
   rating_count?: number;
   reading_time?: number;
   key_ideas_count?: number;
+  thumbnail_url?: string | null;
 }
 
 interface BookHeroProps {
@@ -19,12 +22,12 @@ interface BookHeroProps {
 
 export function BookHero({ book }: BookHeroProps) {
   return (
-    <section className=" py-8 md:py-12">
+    <section className="py-8 md:py-12">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-8 items-center">
           {/* Mobile Image */}
           <div className="md:hidden w-62 relative mx-auto">
-           <BookCoverImage alt={book.title} />
+           <BookCoverImage alt={book.title} thumbnailUrl={book.thumbnail_url} />
           </div>
 
           {/* Text Content */}
@@ -42,7 +45,11 @@ export function BookHero({ book }: BookHeroProps) {
             </div>
        
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mb-6">
-              <Button size="lg" className="w-full sm:w-auto text-md"><BookOpen className="size-5 mr-2" /> Read</Button>
+              <Button asChild size="lg" className="w-full sm:w-auto text-md">
+                <Link href={`/read/${book.id}`}>
+                  <BookOpen className="size-5 mr-2" /> Read
+                </Link>
+              </Button>
               <Button size="lg" variant="secondary" className="w-full sm:w-auto text-md"><Play className="size-5 mr-2" /> Play</Button>
             </div>
 
@@ -63,7 +70,7 @@ export function BookHero({ book }: BookHeroProps) {
 
           {/* Desktop Image */}
           <div className="hidden md:block w-64 relative justify-self-center">
-            <BookCoverImage alt={book.title} />
+            <BookCoverImage alt={book.title} thumbnailUrl={book.thumbnail_url} />
           </div>
         </div>
       </div>

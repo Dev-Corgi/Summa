@@ -17,6 +17,10 @@ interface Book {
     id: string;
     title: string;
     authors: string[];
+    short_description?: string;
+    reading_time?: number;
+    rating?: number;
+    thumbnail_url?: string | null;
 }
 
 interface BookCarouselProps {
@@ -32,8 +36,8 @@ export function BookCarouselSkeleton() {
       <Skeleton className="h-4 w-1/2 mb-4" />
       <div className="flex space-x-4">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="w-1/2 md:w-1/3 lg:w-1/5 flex-shrink-0">
-            <Skeleton className="aspect-[3/4] w-full mb-2 rounded-md" />
+          <div key={i} className="w-1/2 md:w-1/3 lg:w-1/5 shrink-0">
+            <Skeleton className="aspect-3/4 w-full mb-2 rounded-md" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-3/4 mt-1" />
           </div>
@@ -66,16 +70,8 @@ export function BookCarousel({ title, subtitle, books }: BookCarouselProps) {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious 
-  className="hidden md:flex hover:bg-transparent" 
-  variant="ghost"
-  icon={<ChevronLeft className="size-10" />} 
-/>
-<CarouselNext 
-  className="hidden md:flex hover:bg-transparent" 
-  variant="ghost"
-  icon={<ChevronRight className="size-10" />}
-/>
+        <CarouselPrevious className="hidden md:flex" />
+        <CarouselNext className="hidden md:flex" />
       </Carousel>
     </section>
   );

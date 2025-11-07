@@ -16,7 +16,7 @@ const menuItems = [
   { icon: Compass, text: "Explore", href: "/explore" },
   { icon: Library, text: "My Library", href: "/library" },
   { icon: Users, text: "Spaces", href: "/spaces" },
-  { icon: BarChart, text: "Highlights", href: "/highlights" },
+
   { icon: Calendar, text: "Live Sessions", href: "/sessions" },
 ];
 
